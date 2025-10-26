@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+import subprocess
+import sys
+from pathlib import Path
+
 import pytest
 
 from redllm import DATASET_SOURCES, LLMRunner
@@ -109,3 +113,31 @@ def test_parse_pipeline_options_success(options, expected):
 def test_parse_pipeline_options_error():
     with pytest.raises(ValueError):
         parse_pipeline_options(["invalid"])
+
+
+def test_redllm_script_bootstraps_package(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [sys.executable, str(repo_root / "redllm")],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "usage:" in result.stdout
+
+
+def test_start_llm_wrapper_bootstraps_package(tmp_path):
+    repo_root = Path(__file__).resolve().parents[1]
+    result = subprocess.run(
+        [sys.executable, str(repo_root / "scripts" / "start_llm.py")],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert result.returncode == 0
+    assert "usage:" in result.stdout

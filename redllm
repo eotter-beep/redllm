@@ -1,4 +1,24 @@
 #!/bin/python3
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+
+def _ensure_src_on_path() -> None:
+    """Ensure the in-repo ``src`` directory is importable when run from source."""
+    repo_root = Path(__file__).resolve().parent
+    src_dir = repo_root / "src"
+    # Insert the source tree ahead of the repository root so the package is found
+    # before this script of the same name.
+    if str(src_dir) not in sys.path:
+        sys.path.insert(0, str(src_dir))
+    if str(repo_root) not in sys.path:
+        sys.path.insert(1, str(repo_root))
+
+
+_ensure_src_on_path()
+
 from redllm.cli import main
 
 
